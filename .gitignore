@@ -1,0 +1,5 @@
+.history
+.vscode
+build
+sdkconfig
+sdkconfig.old

@@ -2,14 +2,14 @@
 
 esp_err_t initMotors(struct motor *leftMotor, struct motor *rightMotor) {
   // Configure GPIO for left motor control
-  gpio_pad_select_gpio(leftMotor->in1Pin);
-  gpio_pad_select_gpio(leftMotor->in2Pin);
+  gpio_reset_pin(leftMotor->in1Pin);
+  gpio_reset_pin(leftMotor->in2Pin);
   gpio_set_direction(leftMotor->in1Pin, GPIO_MODE_OUTPUT);
   gpio_set_direction(leftMotor->in2Pin, GPIO_MODE_OUTPUT);
 
   // Configure GPIO for right motor control
-  gpio_pad_select_gpio(rightMotor->in1Pin);
-  gpio_pad_select_gpio(rightMotor->in2Pin);
+  gpio_reset_pin(rightMotor->in1Pin);
+  gpio_reset_pin(rightMotor->in2Pin);
   gpio_set_direction(rightMotor->in1Pin, GPIO_MODE_OUTPUT);
   gpio_set_direction(rightMotor->in2Pin, GPIO_MODE_OUTPUT);
 

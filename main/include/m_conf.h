@@ -21,4 +21,10 @@
 #define RIGHT_MOTOR_IN2 33
 #define RIGHT_MOTOR_ENABLE 14
 
+// Logging
+#define MOTOR_LOG_TAG "[MOTOR]"
+#define UTILS_LOG_TAG "[UTILS]"
+#define GPS_LOG_TAG "[GPS]"
+#define MAIN_LOG_TAG "[MAIN]"
+
 #endif // CONF_H_

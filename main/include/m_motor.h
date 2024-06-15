@@ -18,6 +18,10 @@ struct motor {
   gpio_num_t in2Pin;
   gpio_num_t enablePin;
   enum MotorDirection direction;
+  mcpwm_unit_t mcpwnNum;
+  mcpwm_timer_t timer;
+  mcpwm_generator_t generator;
+  mcpwm_io_signals_t signals;
 };
 
 /// @brief Initialize the motors
@@ -25,7 +29,7 @@ struct motor {
 /// @param rightMotor The GPIO pin number for the right motor
 /// @return ESP_OK if the motors were successfully initialized, ESP_FAIL
 /// otherwise
-esp_err_t initMotors(struct motor *leftMotor, struct motor *rightMotor);
+esp_err_t initMotors(struct motor *motor);
 
 /// @brief Set the speed of the motor
 /// @param motor The GPIO pin number for the motor

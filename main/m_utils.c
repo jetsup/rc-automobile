@@ -9,11 +9,14 @@ void i2cInit() {
   conf.scl_io_num = I2C_SCL_PIN;
   conf.scl_pullup_en = GPIO_PULLUP_ENABLE;
   conf.master.clk_speed = I2C_CLOCK_FREQ;
+  conf.clk_flags = 0;
+
   if(i2c_param_config(I2C_PORT_NUM, &conf) != ESP_OK) {
     ESP_LOGE(UTILS_LOG_TAG, "I2C config failed");
     return;
   }
-  if(i2c_driver_install(I2C_PORT_NUM, I2C_MODE_MASTER, 0, 0, 0) != ESP_OK) {
+  
+  if(i2c_driver_install(I2C_PORT_NUM, conf.mode, 0, 0, 0) != ESP_OK) {
     ESP_LOGE(UTILS_LOG_TAG, "I2C driver install failed");
     return;
   }

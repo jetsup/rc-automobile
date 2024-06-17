@@ -3,6 +3,7 @@
 
 #include "m_motor.h"
 #include "m_utils.h"
+#include "qmc5883l.h"
 
 void app_main(void) {
   struct motor leftMotor = {
@@ -26,15 +27,26 @@ void app_main(void) {
       .signals = MCPWM1A,
   };
 
+  i2cInit();
+  struct df_qmc5883 qmc;
+  qmcInit(&qmc, MAGNETOMETER_I2C_ADDRESS);
+
+  // Formula: (deg + (min / 60.0)) / (180 / PI);
+  float declinationAngle = (0 + (39.0 / 60.0)) / (180 / PI);
+  setDeclinationAngle(&qmc, declinationAngle);
+
   initMotors(&leftMotor);
   initMotors(&rightMotor);
-  // i2cInit();
 
-  int counter = 0;
   while (true) {
-    printf("Hello: %d\n", counter++);
+    readRaw(&qmc);
+    getHeadingDegrees(&qmc);
+    float headingDegrees = qmc.v.HeadingDegrees;
+
+    ESP_LOGW("MAIN", "[DIR]: %f", headingDegrees);
+
     setMotorSpeed(&rightMotor, 4095);
     setMotorSpeed(&leftMotor, -3276);
-    vTaskDelay(1000 / portTICK_PERIOD_MS);
+    vTaskDelay(10 / portTICK_PERIOD_MS);
   }
 }

@@ -33,9 +33,8 @@ void app_main(void) {
   initMotors(&leftMotor);
   initMotors(&rightMotor);
 
-  // i2cInit();
   i2c_dev_t i2c_dev = {
-      .port = I2C_NUM_0,
+      .port = I2C_PORT_NUM,
       .addr = QMC5883L_I2C_ADDR_DEF,
       .cfg =
           {
@@ -43,7 +42,7 @@ void app_main(void) {
               .scl_io_num = I2C_SCL_PIN,
               .master =
                   {
-                      .clk_speed = 100000,
+                      .clk_speed = I2C_CLOCK_FREQ,
                   },
           },
   };
@@ -52,40 +51,36 @@ void app_main(void) {
       .i2c_dev = i2c_dev,
       .range = QMC5883L_RNG_8,
   };
-  ESP_ERROR_CHECK(qmc5883l_init_desc(&qmc, QMC5883L_I2C_ADDR_DEF, I2C_NUM_0,
+  ESP_ERROR_CHECK(qmc5883l_init_desc(&qmc, QMC5883L_I2C_ADDR_DEF, I2C_PORT_NUM,
                                      I2C_SDA_PIN, I2C_SCL_PIN));
   ESP_ERROR_CHECK(qmc5883l_reset(&qmc));
   ESP_ERROR_CHECK(qmc5883l_set_mode(&qmc, QMC5883L_MODE_CONTINUOUS));
 
   ultrasonic_sensor_t ultrasonic_sensor = {
-      .trigger_pin = 16,
-      .echo_pin = 17,
+      .trigger_pin = ULTRASONIC_TRIGGER_PIN,
+      .echo_pin = ULTRASONIC_ECHO_PIN,
   };
   ESP_ERROR_CHECK(ultrasonic_init(&ultrasonic_sensor));
 
   bool dataReady = false;
   float distance = 0;
   while (true) {
-    esp_err_t ret = ultrasonic_measure(&ultrasonic_sensor, 4, &distance);
-    // if (ret == ESP_OK) {
-    //   ESP_LOGW("MAIN", "Distance: %f cm", distance);
-    // }
-
+    esp_err_t ret = ultrasonic_measure(&ultrasonic_sensor,
+                                       ULTRASONIC_MAX_DISTANCE_M, &distance);
     ESP_ERROR_CHECK(qmc5883l_data_ready(&qmc, &dataReady));
     if (!dataReady) {
-      // vTaskDelay(0 / portTICK_PERIOD_MS);
       continue;
     }
 
     qmc5883l_data_t raw;
     ESP_ERROR_CHECK(qmc5883l_get_data(&qmc, &raw));
     float heading = 0;
-    float inclination = (0 + (39.0 / 60.0)) / (180 / M_PI);
+    float inclination = INCLINATION_ANGLE;
 
     getHeadingDegrees(&raw, inclination, &heading);
     if (ret == ESP_OK) {
       ESP_LOGW("MAIN", "[RAW]: x=%f, y=%f, z=%f, dir:%f Obstacle: %f", raw.x,
-               raw.y, raw.z, heading, distance * 100);
+               raw.y, raw.z, heading, distance * 100 /*to cm*/);
     } else {
       ESP_LOGW("MAIN", "[RAW]: x=%f, y=%f, z=%f, dir:%f", raw.x, raw.y, raw.z,
                heading);

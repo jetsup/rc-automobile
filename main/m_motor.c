@@ -1,5 +1,7 @@
 #include "m_motor.h"
 
+static int motorCount = 0;
+
 esp_err_t initMotors(struct motor *motor) {
   if (gpio_reset_pin(motor->in1Pin) != ESP_OK ||
       gpio_reset_pin(motor->in2Pin) != ESP_OK) {
@@ -47,7 +49,7 @@ esp_err_t initMotors(struct motor *motor) {
     return ESP_FAIL;
   }
 
-  ESP_LOGI(MOTOR_LOG_TAG, "Motors initialized successfully");
+  ESP_LOGI(MOTOR_LOG_TAG, "Motors (%d) initialized successfully", ++motorCount);
 
   return ESP_OK;
 }
